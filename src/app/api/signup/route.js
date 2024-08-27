@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { email, password, role } = await req.json(); // Parse the JSON body
+    const { email, password, role } = await req.json(); 
     await dbConnect();
 
     if (!email || !password || !role) {

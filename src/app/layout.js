@@ -1,16 +1,22 @@
-"use client";
-
+"use client"
 import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 
-export default function RootLayout({ children, pageProps }) {
+import Dashboard from "@/components/Dashboard";
+export default function RootLayout({
+  children,
+  params: { session, ...params},
+}) {
   return (
-    <SessionProvider session={pageProps?.session}>
-      <html lang="en">
-        <body>
+    <html>
+      <body>
+      <div className="flex flex-col min-h-screen">
+        <SessionProvider session={session}>
           {children}
-        </body>
-      </html>
-    </SessionProvider>
+          <Dashboard/>
+        </SessionProvider>
+        </div>
+      </body>
+    </html>
   );
 }

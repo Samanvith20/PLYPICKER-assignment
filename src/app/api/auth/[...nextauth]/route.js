@@ -47,13 +47,19 @@ const authOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) token.role = user.role;
+     
       return token;
     },
+    
     async session({ session, token }) {
+      
       session.user.role = token.role;
+      
       return session;
-    },
-  },
+    }
+    
+  }
+  
 };
 
 const handler = NextAuth(authOptions);

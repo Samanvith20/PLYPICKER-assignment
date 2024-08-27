@@ -1,12 +1,14 @@
-"use client"
+"use client";
 import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
   const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -16,17 +18,23 @@ const SignIn = () => {
       // Use NextAuth's signIn function
       const result = await signIn('credentials', {
         redirect: false,
-             
         email,
         password,
-        
       });
 
       if (result.error) {
         setError(result.error);
       } else {
-        // Redirect to the dashboard on successful sign-in
-        window.location.href = '/dashboard';
+        // Fetch the session data to determine the user's role
+        const session = await fetch('/api/auth/session').then((res) => res.json());
+          console.log(session);
+          
+        // Check the user's role and redirect accordingly
+        if (session?.user?.role === 'team member') {
+          router.push('/products');
+        } else {
+          router.push('/admin');
+        }
       }
     } catch (err) {
       setError('Something went wrong. Please try again.');
@@ -64,14 +72,13 @@ const SignIn = () => {
           />
         </div>
 
-       
-
         <button
           type="submit"
           className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700"
         >
           Sign In
         </button>
+        
         <div className="text-center mt-4">
           <p>
             Not a member yet?{" "}
@@ -81,7 +88,6 @@ const SignIn = () => {
           </p>
         </div>
       </form>
-     
     </div>
   );
 };
