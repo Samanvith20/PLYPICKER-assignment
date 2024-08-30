@@ -27,8 +27,8 @@ const authOptions = {
           );
           if (!isPasswordValid) throw new Error("Password is incorrect");
 
-         
-          return { _id: user._id.toString(), email: user.email, role: user.role };
+          return user;
+          
         } catch (error) {
           console.error("Error in authorize function:", error);
           throw new Error(error.message);
@@ -36,37 +36,39 @@ const authOptions = {
       },
     }),
   ],
-  session: {
-    strategy: "jwt",
-  },
+  
   callbacks: {
     async jwt({ token, user }) {
-     
-
+   
       if (user) {
         token._id = user._id;
         token.role = user.role;
       }
-      
       return token;
     },
 
     async session({ session, token }) {
-    
-
+     
       if (token.role) {
         session.user.role = token.role;
       } else {
         session.user.role = "guest"; 
       }
-      
       return session;
     },
   },
+
+
+  session: {
+    strategy: "jwt",
+  },
   secret: process.env.NEXTAUTH_SECRET,
+ 
+  
   pages: {
     signIn: "/signin",
   },
+ 
 };
 
 const handler = NextAuth(authOptions);

@@ -18,17 +18,8 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     required: true, 
   },
-  status: {
-    type: String,
-    enum: ['pending', 'approved', 'rejected'],
-    default: 'pending',
-  },
-  reviews: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Review',
-    },
-  ],
+  
+  
 }, {
   timestamps: true,
 });

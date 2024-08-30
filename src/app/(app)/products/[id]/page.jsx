@@ -2,15 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react'; // Import useSession
 import axios from 'axios';
 import Image from 'next/image';
 
 const ProductPage = () => {
-  const params = useParams();
+  const { id } = useParams();
   const router = useRouter();
-  const id = params.id;
-  console.log(id);
-
+  const { data: session } = useSession(); // Access the session data
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,11 +31,17 @@ const ProductPage = () => {
   }, [id]);
 
   const handleEdit = () => {
-    router.push(`/edit-product/${id}`);
+    if (session?.user?.role === 'admin') {
+      router.push(`/update-product/${id}`); // Redirect to update-product if user is admin
+    } else if (session?.user?.role === 'team_member') {
+      router.push(`/edit-product/${id}`); // Redirect to edit-product if user is a team member
+    } else {
+      // Optional: Handle unauthorized access or other roles
+      console.log('Unauthorized access');
+    }
   };
 
   const handleAddToCart = () => {
-    
     console.log('Adding to cart:', product);
   };
 
@@ -78,11 +83,6 @@ const ProductPage = () => {
               className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition duration-300"
             >
               Add to Cart
-            </button>
-            <button 
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300"
-            >
-              Add
             </button>
           </div>
         </div>

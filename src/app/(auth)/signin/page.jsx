@@ -35,7 +35,7 @@ const SignIn = () => {
         if (session?.user?.role === 'team member') {
           router.push('/');
         } else {
-          router.push('/admin');
+          router.push('/dashboard/admin');
         }
       }
     } catch (err) {

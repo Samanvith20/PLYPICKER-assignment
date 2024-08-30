@@ -5,7 +5,7 @@ import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const HomePage = () => {
+const AdminPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   console.log(products)
@@ -56,4 +56,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default AdminPage;
