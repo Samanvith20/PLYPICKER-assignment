@@ -2,7 +2,7 @@
 import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 
-import Dashboard from "@/components/Dashboard";
+
 export default function RootLayout({
   children,
   params: { session, ...params},
@@ -10,10 +10,11 @@ export default function RootLayout({
   return (
     <html>
       <body>
-      <div className="flex flex-col min-h-screen">
+      <div className="">
         <SessionProvider session={session}>
+          
           {children}
-          <Dashboard/>
+         
         </SessionProvider>
         </div>
       </body>

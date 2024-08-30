@@ -28,10 +28,12 @@ const SignIn = () => {
         // Fetch the session data to determine the user's role
         const session = await fetch('/api/auth/session').then((res) => res.json());
           console.log(session);
+          console.log(session.user.role);
+          
           
         // Check the user's role and redirect accordingly
         if (session?.user?.role === 'team member') {
-          router.push('/products');
+          router.push('/');
         } else {
           router.push('/admin');
         }

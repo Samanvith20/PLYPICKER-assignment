@@ -5,6 +5,8 @@ import { NextResponse } from "next/server";
 export async function GET(req){
   const Url= new URL(req.url);
   const id = Url.pathname.split('/').pop();
+  console.log(id);
+  
    await dbConnect()
   try {
     const product = await Product.findById(id);

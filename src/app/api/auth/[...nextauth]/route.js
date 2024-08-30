@@ -1,14 +1,13 @@
-import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import User from "@/models/user.model";
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import dbConnect from '@/lib/Database';
+import bcrypt from "bcryptjs";
+import dbConnect from "@/lib/Database";
 
 const authOptions = {
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
@@ -17,23 +16,19 @@ const authOptions = {
         await dbConnect();
 
         try {
-          
           const normalizedEmail = credentials.email.toLowerCase();
-          
-          
           const user = await User.findOne({ email: normalizedEmail });
-          if (!user) throw new Error('No user found with the email');
 
-          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
-          if (!isPasswordValid) throw new Error('Password is incorrect');
+          if (!user) throw new Error("No user found with the email");
 
-          const token = jwt.sign(
-            { email: user.email, role: user.role },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password,
+            user.password
           );
+          if (!isPasswordValid) throw new Error("Password is incorrect");
 
-          return { email: user.email, role: user.role, token };
+         
+          return { _id: user._id.toString(), email: user.email, role: user.role };
         } catch (error) {
           console.error("Error in authorize function:", error);
           throw new Error(error.message);
@@ -46,20 +41,32 @@ const authOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.role = user.role;
      
+
+      if (user) {
+        token._id = user._id;
+        token.role = user.role;
+      }
+      
       return token;
     },
-    
+
     async session({ session, token }) {
-      
-      session.user.role = token.role;
+    
+
+      if (token.role) {
+        session.user.role = token.role;
+      } else {
+        session.user.role = "guest"; 
+      }
       
       return session;
-    }
-    
-  }
-  
+    },
+  },
+  secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/signin",
+  },
 };
 
 const handler = NextAuth(authOptions);
