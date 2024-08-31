@@ -10,12 +10,16 @@ export async function GET(req) {
     // Extract userId from query parameters or headers
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
+    // console.log(userId);
+    
     
     if (!userId) {
       return NextResponse.json({ message: "User ID is required" }, { status: 400 });
     }
 
     const reviews = await Review.find({ userId: userId });
+    console.log(reviews);
+    
     if (!reviews || reviews.length === 0) {
       return NextResponse.json({ message: "No reviews found for this user" }, { status: 404 });
     }

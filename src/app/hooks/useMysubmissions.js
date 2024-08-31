@@ -1,20 +1,22 @@
-// hooks/useMySubmissions.js
+
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useSession } from "next-auth/react";
 
-const useMySubmissions = (userRole) => {
-  const { data: session, status } = useSession();
+const useMySubmissions = (userId) => {
+  console.log(userId);
+  
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (userRole === "team member" && status === "authenticated") {
+    if (userId) {
       const fetchReviews = async () => {
         try {
           // Include userId in the query parameters
-          const response = await axios.get(`/api/my-submissions?userId=${session.user.id}`);
+          const response = await axios.get(`/api/my-submissions?userId=${userId}`);
+          console.log(response.data);
+          
           setReviews(response.data);
         } catch (error) {
           setError(error);
@@ -26,7 +28,7 @@ const useMySubmissions = (userRole) => {
 
       fetchReviews();
     }
-  }, [userRole, status, session.userId]);
+  }, [userId]);
 
   return { reviews, loading, error };
 };

@@ -1,13 +1,20 @@
 "use client";
 
+
 import useMySubmissions from "@/app/hooks/useMysubmissions";
 import { useSession, signIn } from "next-auth/react";
-
 
 const MySubmissions = () => {
   const { data: session, status } = useSession();
   const userRole = session?.user?.role;
-  const { reviews, loading, error } = useMySubmissions(userRole);
+  const userId = session?.user?.id;
+  console.log(session);
+  console.log(userId);
+  
+  
+
+  // Call useMySubmissions with the correct userId
+  const { reviews, loading, error } = useMySubmissions(userId);
 
   if (status === "loading") {
     return (
