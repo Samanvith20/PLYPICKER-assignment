@@ -1,36 +1,53 @@
 import dbConnect from '@/lib/Database';
 import { NextResponse } from 'next/server';
 import Review from '@/models/Review.model';
-
+import { uploadToCloudinary } from '@/lib/Cloudinary';
 
 export async function POST(req) {
-  
-
   await dbConnect(); 
 
-  
-
-  const { productId, name, description, price, image, status,userId } = await req.json();
- console.log(userId);
- 
-  // Validate input
-  if (!productId || !name || !description || !price || !image || !status || !userId) {
-    return NextResponse.json({ message: "All fields must be provided" }, { status: 400 });
-  }
-
   try {
-    const newReview = new Review({
+    // Parse the form data
+    const formData = await req.formData();
+    
+    const name = formData.get("name");
+    const description = formData.get("description");
+    const price = formData.get("price");
+    const file = formData.get("image");
+    const userId = formData.get("userId");
+    const productId = formData.get("productId");
+
+    // Validate input
+    if (!productId || !name || !description || !price || !userId) {
+      return NextResponse.json({ message: "All fields must be provided" }, { status: 400 });
+    }
+
+    // Initialize newReview object
+    const reviewData = {
       productId,
-      userId, 
+      userId,
       name,
       description,
       price,
-      image,
-      status,
-    });
+    };
 
+    // If an image is provided, upload it to Cloudinary
+    if (file) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+
+      const result = await uploadToCloudinary(buffer);
+
+      if (!result.url) {
+        return NextResponse.json({ message: "Image upload failed" }, { status: 500 });
+      }
+
+      reviewData.image = result.secure_url;
+    }
+
+    // Create and save the review
+    const newReview = new Review(reviewData);
     await newReview.save();
-    console.log(newReview);
 
     return NextResponse.json({ success: true, review: newReview }, { status: 201 });
   } catch (error) {

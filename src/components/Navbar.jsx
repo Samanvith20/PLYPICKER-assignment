@@ -20,8 +20,17 @@ export default function Dashboard() {
           PLYPICKER
         </a>
 
-        {session ? (
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 ">
+          <Link href="/add-item">
+            <Button
+              className="bg-blue-500 text-white hover:bg-blue-600 mr-7"
+              variant="solid"
+            >
+              Add Item
+            </Button>
+          </Link>
+
+          {session ? (
             <div className="relative">
               <button 
                 onClick={handleDropdownToggle} 
@@ -32,7 +41,6 @@ export default function Dashboard() {
                   alt="Profile" 
                   className="w-full h-8 rounded-full object-contain" 
                 />
-                
               </button>
               {isOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg">
@@ -54,17 +62,17 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-          </div>
-        ) : (
-          <Link href="/signin">
-            <Button
-              className="w-full md:w-auto bg-slate-100 text-black"
-              variant="outline"
-            >
-              Login
-            </Button>
-          </Link>
-        )}
+          ) : (
+            <Link href="/signin">
+              <Button
+                className="w-full md:w-auto bg-slate-100 text-black"
+                variant="outline"
+              >
+                Login
+              </Button>
+            </Link>
+          )}
+        </div>
       </div>
     </nav>
   );

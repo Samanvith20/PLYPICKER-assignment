@@ -10,11 +10,11 @@ export async function GET(req) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  await dbConnect(); // Connect to the database
+  await dbConnect(); 
 
   try {
-    const userId = token._id; // Get the user ID from the token
-    console.log('User ID from token:', userId);
+    const userId = token._id; 
+    
 
    
 

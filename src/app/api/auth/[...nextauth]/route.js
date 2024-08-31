@@ -50,6 +50,7 @@ const authOptions = {
     async session({ session, token }) {
      
       if (token.role) {
+        session.user.id = token._id;
         session.user.role = token.role;
       } else {
         session.user.role = "guest"; 

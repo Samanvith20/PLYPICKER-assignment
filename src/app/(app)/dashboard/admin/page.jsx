@@ -8,7 +8,7 @@ import Link from 'next/link';
 const AdminPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  console.log(products)
+  // console.log(products)
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -40,8 +40,8 @@ const AdminPage = () => {
               <Image 
                 src={product.imageUrl} 
                 alt={product.name} 
-                width={200} // Adjust the width to fit your design
-                height={192} // Adjust the height to fit your design
+                width={200} 
+                height={192} 
                 className="w-full h-48 object-contain"
               />
               <div className="p-4">

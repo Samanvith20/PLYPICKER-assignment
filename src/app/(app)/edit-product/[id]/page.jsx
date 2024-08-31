@@ -63,8 +63,9 @@ const EditProductPage = () => {
     formData.append('description', product.description);
     formData.append('price', product.price);
     formData.append('image', imageFile);
-    formData.append('userId', 'UserId'); // Add your userId here
-
+    formData.append('userId', UserId); 
+    formData.append('productId', id);
+     
     try {
       await axios.post('/api/reviews', formData, {
         headers: {

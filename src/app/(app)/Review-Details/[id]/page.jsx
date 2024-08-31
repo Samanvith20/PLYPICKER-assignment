@@ -9,7 +9,8 @@ const ReviewDetails = () => {
   const [review, setReview] = useState(null);
   const [originalProduct, setOriginalProduct] = useState(null);
   const params = useParams();
-  const id=params.id
+  const id = params.id;
+  const router = useRouter();
 
   useEffect(() => {
     const fetchReviewAndProduct = async () => {
@@ -31,20 +32,16 @@ const ReviewDetails = () => {
 
   const handleApproval = async (status) => {
     try {
-        console.log(status);
-        
-      await axios.patch(`/api/pending-request/${id}`, { status: status.toLowerCase() }); // Convert status to lowercase
-      router.push("/PendingReviews");
+      console.log("Before sending to backend:", status.toLowerCase());
+      await axios.patch(`/api/pending-request/${id}`, { status: status.toLowerCase() });
+      router.push("/pending-requests");
     } catch (error) {
       console.error(`Error ${status === "approved" ? "approving" : "rejecting"} the review:`, error);
     }
   };
-  
-  
 
   const renderFieldComparison = (label, originalValue, newValue) => {
     const hasChanged = originalValue !== newValue;
-
     return (
       <div className="mb-4">
         <label className="block text-gray-700 font-semibold">{label}:</label>
@@ -73,19 +70,33 @@ const ReviewDetails = () => {
       {review && originalProduct ? (
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h1 className="text-2xl font-bold mb-4 text-gray-800">Review Details for {review.name}</h1>
-          <img
-            src={review.image}
-            alt={review.name}
-            className="w-full h-64 object-cover rounded-lg mb-4"
-          />
-          
-          {/* Compare fields */}
-          {renderFieldComparison("Name", originalProduct.name, review.name)}
-          {renderFieldComparison("Description", originalProduct.description, review.description)}
-          {renderFieldComparison("Price", `$${originalProduct.price}`, `$${review.price}`)}
-          {renderFieldComparison("Image", originalProduct.image, review.image)}
-          
-          <div className="flex gap-4 mt-6">
+
+          {/* Responsive Layout for Desktop */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <img
+                src={review.image}
+                alt={review.name}
+                className="w-full h-64 object-cover rounded-lg mb-4"
+              />
+            </div>
+            <div>
+              {/* Compare fields */}
+              {renderFieldComparison("Name", originalProduct.name, review.name)}
+              {renderFieldComparison("Description", originalProduct.description, review.description)}
+              {renderFieldComparison("Price", `$${originalProduct.price}`, `$${review.price}`)}
+
+              {/* Image URL Shortening */}
+              {renderFieldComparison(
+                "Image URL",
+                originalProduct.image?.substring(0, 30) + "...",
+                review.image?.substring(0, 30) + "..."
+              )}
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-4 mt-6 justify-end">
             <button
               onClick={() => handleApproval("Approved")}
               className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
@@ -93,10 +104,10 @@ const ReviewDetails = () => {
               Approved
             </button>
             <button
-              onClick={() => handleApproval("Reject")}
+              onClick={() => handleApproval("Rejected")}
               className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
             >
-              Reject
+              Rejected
             </button>
           </div>
         </div>
