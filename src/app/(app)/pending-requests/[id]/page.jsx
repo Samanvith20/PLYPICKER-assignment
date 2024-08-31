@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
@@ -8,20 +9,32 @@ const ReviewDetails = () => {
   const { data: session, status } = useSession();
   const [review, setReview] = useState(null);
   const [originalProduct, setOriginalProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const params = useParams();
   const id = params.id;
   const router = useRouter();
 
   useEffect(() => {
     const fetchReviewAndProduct = async () => {
-      try {
-        const reviewResponse = await axios.get(`/api/pending-request/${id}`);
-        setReview(reviewResponse.data);
+      setLoading(true);
+      setError(null);
 
-        const productResponse = await axios.get(`/api/products/${reviewResponse.data.productId}`);
-        setOriginalProduct(productResponse.data);
+      try {
+        const reviewResponse = axios.get(`/api/pending-request/${id}`);
+        const productResponse = reviewResponse.then(response =>
+          axios.get(`/api/products/${response.data.productId}`)
+        );
+
+        const [reviewData, productData] = await Promise.all([reviewResponse, productResponse]);
+
+        setReview(reviewData.data);
+        setOriginalProduct(productData.data);
       } catch (error) {
         console.error("Error fetching review details or original product data:", error);
+        setError("Failed to load review details. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -57,12 +70,30 @@ const ReviewDetails = () => {
     );
   };
 
-  if (status === "loading") {
-    return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-lg font-semibold">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-lg font-semibold text-red-500">{error}</p>
+      </div>
+    );
   }
 
   if (status !== "authenticated" || session.user.role !== "admin") {
-    return <p>Access Denied</p>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-lg font-semibold text-red-500">
+          Access Denied
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -77,7 +108,7 @@ const ReviewDetails = () => {
               <img
                 src={review.image}
                 alt={review.name}
-                className="w-full h-64 object-cover rounded-lg mb-4"
+                className="w-full h-64 object-contain rounded-lg mb-4"
               />
             </div>
             <div>

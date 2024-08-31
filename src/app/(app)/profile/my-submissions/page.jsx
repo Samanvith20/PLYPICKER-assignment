@@ -1,28 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
-import axios from "axios";
+
+import useMySubmissions from "@/app/hooks/useMysubmissions";
 import { useSession, signIn } from "next-auth/react";
+
 
 const MySubmissions = () => {
   const { data: session, status } = useSession();
-  const [reviews, setReviews] = useState([]);
-
-  useEffect(() => {
-    if (status === "authenticated" && session.user.role === "team member") {
-      const fetchReviews = async () => {
-        try {
-          const response = await axios.get("/api/my-submissions");
-          setReviews(response.data);
-        } catch (error) {
-          console.error("Error fetching reviews:", error);
-        }
-      };
-
-      fetchReviews();
-    } else if (status === "unauthenticated") {
-      signIn();
-    }
-  }, [session, status]);
+  const userRole = session?.user?.role;
+  const { reviews, loading, error } = useMySubmissions(userRole);
 
   if (status === "loading") {
     return (
@@ -32,11 +17,34 @@ const MySubmissions = () => {
     );
   }
 
-  if (session && session.user.role !== "team member") {
+  if (status === "unauthenticated") {
+    signIn();
+    return null; // Prevent further rendering
+  }
+
+  if (userRole !== "team member") {
     return (
       <div className="flex justify-center items-center h-screen">
         <p className="text-lg font-semibold text-red-500">
           Access Denied. Only team members can access this page.
+        </p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-lg font-semibold">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-lg font-semibold text-red-500">
+          Error loading submissions.
         </p>
       </div>
     );

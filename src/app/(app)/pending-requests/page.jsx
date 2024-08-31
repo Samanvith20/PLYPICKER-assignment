@@ -45,7 +45,7 @@ const PendingReviews = () => {
   }
 
   const handleReviewClick = (id) => {
-    router.push(`/Review-Details/${id}`);
+    router.push(`/pending-requests/${id}`);
   };
 
   return (
@@ -68,7 +68,7 @@ const PendingReviews = () => {
               <img
                 src={review.image}
                 alt={review.name}
-                className="w-full h-48 object-cover rounded-t-lg"
+                className="w-full h-48 object-contain rounded-t-lg"
               />
               <div className="mt-4">
                 <h2 className="text-xl font-semibold text-gray-800">

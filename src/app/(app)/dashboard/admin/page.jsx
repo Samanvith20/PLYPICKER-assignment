@@ -1,59 +1,61 @@
-"use client"; 
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import useProducts from '@/app/hooks/useProducts';
 
-const AdminPage = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  // console.log(products)
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get('/api/get-product');
-        setProducts(response.data); 
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+const Adminpage = () => {
+  const { products, loading, error } = useProducts();
 
   if (loading) {
-    return <div className="text-center mt-10">Loading...</div>;
+    return <div className="text-center mt-10">Loading products...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center mt-10 text-red-500">Failed to load products.</div>;
   }
 
   return (
-    <div className="grid grid-cols-1  mt-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      {products.map((product) => (
-       
-        
-        <Link key={product. _id } href={`/products/${product. _id }`}>
-          
-            <div className="bg-white shadow-md rounded-lg overflow-hidden">
-              <Image 
-                src={product.imageUrl} 
-                alt={product.name} 
-                width={200} 
-                height={192} 
-                className="w-full h-48 object-contain"
-              />
-              <div className="p-4">
-                <h3 className="text-lg font-semibold">{product.name}</h3>
-                <p className="text-green-600 font-bold mt-2">${product.price.toFixed(2)}</p>
-              </div>
-            </div>
-          
-        </Link>
-      ))}
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white shadow-md rounded-lg">
+          <thead>
+            <tr>
+              <th className="py-2 px-4 border-b">Product Image</th>
+              <th className="py-2 px-4 border-b">Name</th>
+              <th className="py-2 px-4 border-b">Price</th>
+              <th className="py-2 px-4 border-b">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map(({ _id, imageUrl, name, price }) => (
+              <tr key={_id} className="hover:bg-gray-100">
+                <td className="py-2 px-4 border-b">
+                  <Image 
+                    src={imageUrl} 
+                    alt={name} 
+                    width={50} 
+                    height={50} 
+                    className="object-contain"
+                  />
+                </td>
+                <td className="py-2 px-4 border-b">{name}</td>
+                <td className="py-2 px-4 border-b">${price.toFixed(2)}</td>
+                <td className="py-2 px-4 border-b">
+                  <Link href={`/update-product/${_id}`} className="text-blue-600 hover:text-blue-800 mr-2">
+                    Edit
+                  </Link>
+                  <button className="text-red-600 hover:text-red-800">Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
-export default AdminPage;
+export default Adminpage;

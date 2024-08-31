@@ -1,85 +1,42 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from "@/components/ui/button"
 
+import useAddItemForm from "@/app/hooks/useAddItemForm";
+import { Button } from "@/components/ui/button";
 
 export default function AddItem() {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [image, setImage] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  const router = useRouter();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    setLoading(true);
-    setError('');
-    setSuccess('');
-
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('description', description);
-    formData.append('price', price);
-    if (image) {
-      formData.append('image', image);
-    }
-
-    try {
-      const response = await fetch('/api/create-product', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        setSuccess(data.message);
-        router.push('/'); // Redirect to homepage or any other page
-      } else {
-        setError(data.message);
-      }
-    } catch (err) {
-      console.error('Error:', err);
-      setError('An error occurred while adding the item.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    register,
+    handleSubmit,
+    errors,
+    isSubmitting,
+    onSubmit,
+  } = useAddItemForm();
 
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-3xl font-bold mb-6">Add New Item</h2>
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-lg">
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-6 rounded-lg shadow-lg">
         <div className="mb-4">
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
           <input
             type="text"
             id="name"
-            name="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
+            {...register('name', { required: 'Name is required' })}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
           />
+          {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
         </div>
 
         <div className="mb-4">
           <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
           <textarea
             id="description"
-            name="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
+            {...register('description', { required: 'Description is required' })}
             rows="4"
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
           />
+          {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
         </div>
 
         <div className="mb-4">
@@ -87,12 +44,10 @@ export default function AddItem() {
           <input
             type="number"
             id="price"
-            name="price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            required
+            {...register('price', { required: 'Price is required' })}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
           />
+          {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
         </div>
 
         <div className="mb-4">
@@ -100,24 +55,22 @@ export default function AddItem() {
           <input
             type="file"
             id="image"
-            name="image"
+            {...register('image')}
             accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
-            required
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
           />
+          {errors.image && <p className="text-red-500 text-sm">{errors.image.message}</p>}
         </div>
 
-        {error && <p className="text-red-500 mb-4">{error}</p>}
-        {success && <p className="text-green-500 mb-4">{success}</p>}
+        {errors.server && <p className="text-red-500 mb-4">{errors.server.message}</p>}
 
         <Button
           type="submit"
           className="w-full md:w-auto bg-blue-500 text-white hover:bg-blue-600"
           variant="solid"
-          disabled={loading}
+          disabled={isSubmitting}
         >
-          {loading ? 'Adding...' : 'Add Item'}
+          {isSubmitting ? 'Adding...' : 'Add Item'}
         </Button>
       </form>
     </div>
