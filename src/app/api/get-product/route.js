@@ -4,10 +4,10 @@ import { NextResponse } from "next/server";
 
 // GET all products
 export async function GET() {
-    console.log("hello from get-products route");
+    
     
     await dbConnect();
-    console.log("Database connected successfully");
+    
     
     try {
         const products = await Product.find({});

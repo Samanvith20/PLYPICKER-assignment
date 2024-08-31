@@ -1,15 +1,20 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
-import Cropper from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
+import { useSession } from 'next-auth/react';
 
 const EditProductPage = () => {
   const params = useParams();
   const id = params.id;
   const router = useRouter();
+  const { data: session } = useSession();
+  console.log(session);
+  
+  const UserId=session.user.id;
+  console.log(UserId);
+  
 
   const [product, setProduct] = useState({
     name: '',
@@ -18,8 +23,6 @@ const EditProductPage = () => {
     image: null,
   });
   const [loading, setLoading] = useState(true);
-  const [crop, setCrop] = useState({ unit: '%', width: 30, height: 30 });
-  const [croppedImageUrl, setCroppedImageUrl] = useState(null);
   const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
@@ -50,71 +53,25 @@ const EditProductPage = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImageFile(file);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setCroppedImageUrl(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleCropComplete = (crop) => {
-    if (!imageFile) {
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const image = new Image();
-      image.src = reader.result;
-
-      image.onload = () => {
-        const canvas = document.createElement('canvas');
-        const scaleX = image.width / image.naturalWidth;
-        const scaleY = image.height / image.naturalHeight;
-        const croppedCanvas = document.createElement('canvas');
-        const ctx = croppedCanvas.getContext('2d');
-
-        // Set canvas dimensions based on crop
-        croppedCanvas.width = crop.width;
-        croppedCanvas.height = crop.height;
-
-        // Draw the cropped image
-        ctx.drawImage(
-          image,
-          crop.x * scaleX,
-          crop.y * scaleY,
-          crop.width * scaleX,
-          crop.height * scaleY,
-          0,
-          0,
-          crop.width,
-          crop.height
-        );
-
-        // Get the cropped image URL
-        const croppedImageUrl = croppedCanvas.toDataURL('image/jpeg');
-        setCroppedImageUrl(croppedImageUrl); // Update state with the cropped image URL
-      };
-    };
-
-    reader.readAsDataURL(imageFile); // Read the image file
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const reviewData = {
-      productId: id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      image: croppedImageUrl, // Use the cropped image URL
-      status: 'pending', // Set initial status to pending
-    };
+    const formData = new FormData();
+    formData.append('name', product.name);
+    formData.append('description', product.description);
+    formData.append('price', product.price);
+    formData.append('image', imageFile);
+    formData.append('userId', 'UserId'); // Add your userId here
 
     try {
-      await axios.post('/api/reviews', reviewData);
-      router.push(`/`); 
+      await axios.post('/api/reviews', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      router.push(`/`);
     } catch (error) {
       console.error('Error submitting review:', error);
     }
@@ -172,15 +129,6 @@ const EditProductPage = () => {
               onChange={handleImageChange}
               className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {croppedImageUrl && (
-              <Cropper
-                src={croppedImageUrl}
-                crop={crop}
-                onCropChange={setCrop}
-                onCropComplete={handleCropComplete}
-                className="mt-4"
-              />
-            )}
           </div>
           <button type="submit" className="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 transition duration-200">
             Submit Changes for Approval

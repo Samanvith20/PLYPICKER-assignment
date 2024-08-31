@@ -10,7 +10,8 @@ export const config = {
     '/',
     '/profile',
     '/admin',
-    '/edit-product/:path*'
+    '/edit-product/:path*',
+     '/update-product/:path*'
   ],
 };
 
@@ -35,7 +36,8 @@ export async function middleware(request) {
       url.pathname.startsWith('/products') ||
       url.pathname.startsWith('/profile') ||
       url.pathname.startsWith('/dashboard') ||
-      url.pathname.startsWith('/edit-product')
+      url.pathname.startsWith('/edit-product') ||
+      url.pathname.startsWith('/update-product')
     ) {
       return NextResponse.redirect(new URL('/signin', request.url));
     }

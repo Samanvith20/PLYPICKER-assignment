@@ -33,7 +33,7 @@ const ProductPage = () => {
   const handleEdit = () => {
     if (session?.user?.role === 'admin') {
       router.push(`/update-product/${id}`); // Redirect to update-product if user is admin
-    } else if (session?.user?.role === 'team_member') {
+    } else if (session?.user?.role === 'team member') {
       router.push(`/edit-product/${id}`); // Redirect to edit-product if user is a team member
     } else {
       // Optional: Handle unauthorized access or other roles

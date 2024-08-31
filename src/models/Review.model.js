@@ -7,16 +7,26 @@ const ReviewSchema = new mongoose.Schema(
       ref: "Product",
       required: true,
     },
+    userId: { 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", 
+      required: true,
+    },
     name: { type: String, required: true },
     description: { type: String, required: true },
-    price: { type: Number, required: true },
-    image: { type: String, required: true },
+    
+    image: { 
+      type: String, 
+      required: true,
+      
+    },
     status: {
       type: String,
-      enum: ["pending", "rejected", "approved"],
+      enum: ["pending", "Reject", "approved"],
       default: "pending",
     },
-    adminId: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
+   
+    
   },
   { timestamps: true }
 );
