@@ -3,10 +3,10 @@ import { useForm } from 'react-hook-form';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useToast } from "@/components/ui/use-toast";
+
 
 const SignIn = () => {
-  const { toast } = useToast();
+  
   const {
     register,
     handleSubmit,
@@ -26,10 +26,7 @@ const SignIn = () => {
         console.error('Sign in failed:', result.error);
       } else {
         const session = await fetch('/api/auth/session').then((res) => res.json());
-        toast({
-          title: "Sign in successful",
-          description: "You have successfully signed in to your account.",
-        })
+       
         if (session?.user?.role === 'team member') {
           router.push('/');
         } else {
