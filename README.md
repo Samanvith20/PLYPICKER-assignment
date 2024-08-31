@@ -9,6 +9,17 @@ This project is a web application developed as part of an assignment for Plypick
 - Create, read, and manage product reviews
 - View user submissions
 - Admin dashboard for managing pending requests
+  
+  ## Future Updates
+Future updates to this project include:
+1. Implementing a cart system functionality for users to manage their selected products.
+2. Integrating a payment gateway for secure transactions.
+3. Adding filtering options for products to enhance user experience.
+4. Implementing discount codes and promotions for users.
+5. Adding user reviews and ratings for individual products.
+6. Enhancing the admin dashboard with analytics and reporting features.
+7. Implementing a notification system for users regarding their submissions and updates.
+8. Improving the UI/UX with responsive design enhancements and accessibility features.
 
 ## Live Demo
 You can view the live application at: [Live Demo Link](https://plypicker-assignment-black.vercel.app/)
@@ -27,15 +38,15 @@ You can view the live application at: [Live Demo Link](https://plypicker-assignm
 - MongoDB (local or cloud instance)
 
 ### Clone the Repository
-  git clone https://github.com/Samanvith20/PLYPICKER-assignment.git
-cd PLYPICKER-assignment
+  - git clone https://github.com/Samanvith20/PLYPICKER-assignment.git
+   - cd PLYPICKER-assignment
 
 ### Environment Variables
 Create a `.env.local` file in the root of the project and add the following variables:
-MONGODB_URI=your_mongodb_connection_string
-NEXTAUTH_SECRET=your_nextauth_secret
-CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-CLOUDINARY_API_KEY=Your_cloudinary_key
+- MONGODB_URI=your_mongodb_connection_string
+- NEXTAUTH_SECRET=your_nextauth_secret
+- CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+- CLOUDINARY_API_KEY=Your_cloudinary_key
 
 
 ## Getting Started
