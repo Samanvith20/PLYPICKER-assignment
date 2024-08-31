@@ -3,6 +3,7 @@ import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 
 
+
 export default function RootLayout({
   children,
   params: { session, ...params},
@@ -14,6 +15,7 @@ export default function RootLayout({
         <SessionProvider session={session}>
           
           {children}
+          {/* <Toaster/> */}
          
         </SessionProvider>
         </div>

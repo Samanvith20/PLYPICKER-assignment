@@ -43,7 +43,7 @@ const UpdateProductPage = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      router.push('/');
+      router.push('/dashboard/admin');
     } catch (error) {
       console.error('Error updating product:', error);
     }

@@ -53,6 +53,9 @@ export default function Dashboard() {
                   <Link href="/pending-requests">
                     <span className="block px-4 py-2 text-sm cursor-pointer">Pending Requests</span>
                   </Link>
+                  <Link href="/dashboard/admin">
+                    <span className="block px-4 py-2 text-sm cursor-pointer">Admin Dashboard</span>
+                  </Link>
                   <button
                     onClick={() => signOut()}
                     className="w-full text-left px-4 py-2 text-sm bg-red-500 text-white rounded-b-md"

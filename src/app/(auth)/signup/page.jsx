@@ -15,6 +15,10 @@ const Signup = () => {
   const onSubmit = async (data) => {
     try {
       await axios.post('/api/signup', data);
+      toast({
+        title: "Sign up successful",
+        description: "You have successfully signed up for an account.",
+      })
       router.replace('/signin');
     } catch (error) {
       console.error('Registration failed:', error);
