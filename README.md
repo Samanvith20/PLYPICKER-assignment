@@ -1,7 +1,7 @@
 # Project Name
  Ecommerce project
 ## Description
-This project is a web application built with Next.js, MongoDB, and NextAuth for user authentication. It allows users to submit reviews for products, view their submissions, and for admins to manage those reviews. The application features user roles, including "admin" and "team member," to control access to different functionalities.
+This project is a web application developed as part of an assignment for Plypicker. It allows users to submit and manage product reviews, featuring role-based access control for both team members and admins. Built with Next.js and MongoDB, the application leverages NextAuth for secure user authentication. Users can view their submissions, while admins can manage pending requests, ensuring a streamlined review process. The project showcases modern web development practices and is designed to enhance user engagement with product feedback.
 
 ## Features
 - User authentication with NextAuth
