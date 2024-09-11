@@ -39,7 +39,7 @@ const EditProductPage = () => {
     if (data.image.length > 0) {
       formData.append('image', data.image[0]);
     }
-    formData.append('userId', session?.user?.id);
+    formData.append('userId', session.user._id);
     formData.append('productId', id);
 
     try {

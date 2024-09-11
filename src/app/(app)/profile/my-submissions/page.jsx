@@ -5,9 +5,11 @@ import { useSession, signIn } from "next-auth/react";
 const MySubmissions = () => {
   const { data: session, status } = useSession();
   const userRole = session?.user?.role;
-  const userId = session.user._id
+  console.log(userRole);
+  
+  const userId = session?.user?._id
   // console.log(session);
-  console.log(userId);
+  // console.log(userId);
   
   
 
