@@ -3,8 +3,9 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import User from "@/models/user.model";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/Database";
+import Sessions from "@/models/Session.model";
 
-const authOptions = {
+ export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -16,19 +17,18 @@ const authOptions = {
         await dbConnect();
 
         try {
+          // Normalize email and find the user in the database
           const normalizedEmail = credentials.email.toLowerCase();
           const user = await User.findOne({ email: normalizedEmail });
 
           if (!user) throw new Error("No user found with the email");
 
-          const isPasswordValid = await bcrypt.compare(
-            credentials.password,
-            user.password
-          );
+          // Compare provided password with the stored hashed password
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
           if (!isPasswordValid) throw new Error("Password is incorrect");
 
-          return user;
-          
+          // Return user object with necessary information
+          return { _id: user._id.toString(), email: user.email, role: user.role };
         } catch (error) {
           console.error("Error in authorize function:", error);
           throw new Error(error.message);
@@ -36,40 +36,55 @@ const authOptions = {
       },
     }),
   ],
-  
   callbacks: {
     async jwt({ token, user }) {
-   
+      // Add user information to the token after successful login
       if (user) {
         token._id = user._id;
         token.role = user.role;
       }
       return token;
     },
-
     async session({ session, token }) {
-     
-      if (token.role) {
-        session.user.id = token._id;
-        session.user.role = token.role;
-      } else {
-        session.user.role = "guest"; 
-      }
+      // Set the role in the session based on token
+      session.user.role = token.role || "guest";
+      session.user._id = token._id;
       return session;
     },
+    async signIn({ user }) {
+      await dbConnect();
+      try {
+        // Create a new session in the database after user signs in
+        const newSession = new Sessions({
+          userId: user._id,
+          loginTime: new Date(),
+          activities: [
+            {
+              action: "login",
+              description: `User ${user.email} has logged in`,
+              timestamp: new Date(),
+            },
+          ],
+        });
+        await newSession.save();
+        console.log("New session created:", newSession);
+
+        return true; // Return true if sign-in is successful
+      } catch (error) {
+        console.error("Error in signIn callback:", error);
+        return false; // Return false if there was an error during sign-in
+      }
+    },
+    
+    
   },
-
-
   session: {
-    strategy: "jwt",
+    strategy: "jwt", // Using JWT strategy for sessions
   },
-  secret: process.env.NEXTAUTH_SECRET,
- 
-  
+  secret: process.env.NEXTAUTH_SECRET, // Ensure this is set in your environment variables
   pages: {
-    signIn: "/signin",
+    signIn: "/signin", // Custom sign-in page
   },
- 
 };
 
 const handler = NextAuth(authOptions);

@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import useProducts from "../hooks/useProducts";
+import axios from "axios";
 
 
 const HomePage = () => {
@@ -12,6 +13,22 @@ const HomePage = () => {
   if (loading) {
     return <div className="text-center mt-10">Loading...</div>;
   }
+  const handleProductClick = async (product) => {
+    try {
+      await axios.post('/api/track-activity', {
+        action: 'product-click',
+        description: `User clicked on product ${product.name}`,
+        details: {
+          productId: product._id,
+          productName: product.name,
+          productPrice: product.price
+        }
+      });
+      console.log('Product click activity tracked:', product);
+    } catch (error) {
+      console.error('Error tracking product click activity:', error);
+    }
+  };
 
   if (error) {
     return (
@@ -24,7 +41,8 @@ const HomePage = () => {
   return (
     <div className="grid grid-cols-1  mt-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {products.map((product) => (
-        <Link key={product._id} href={`/products/${product._id}`}>
+        <Link key={product._id}   onClick={() => handleProductClick(product)}
+         href={`/products/${product._id}`}>
           <div className="bg-white shadow-md rounded-lg overflow-hidden">
             <Image
               src={product.imageUrl}

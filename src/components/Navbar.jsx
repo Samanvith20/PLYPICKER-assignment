@@ -1,16 +1,36 @@
 "use client";
-
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { useState } from "react";
+import { useRouter } from "next/navigation"; 
 
 export default function Dashboard() {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter(); // Initialize router
 
   const handleDropdownToggle = () => {
-    setIsOpen(prev => !prev);
+    setIsOpen((prev) => !prev);
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/logout", {
+        method: "POST",
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        // Trigger NextAuth signOut which will also redirect to the homepage or login
+        await signOut({ redirect: false });
+        router.push("/signin"); // Correct routing after logout
+      } else {
+        console.error("Error logging out:", data.message);
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
   };
 
   return (
@@ -32,32 +52,43 @@ export default function Dashboard() {
 
           {session ? (
             <div className="relative">
-              <button 
-                onClick={handleDropdownToggle} 
+              <button
+                onClick={handleDropdownToggle}
                 className="flex items-center space-x-2 bg-slate-100 text-black p-2 rounded-full"
               >
-                <img 
-                  src={session.user?.image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-Ne7oVV6Lx9uAnmJDUZrrLcGy8yzo1sXdpQ&s"} 
-                  alt="Profile" 
-                  className="w-full h-8 rounded-full object-contain" 
+                <img
+                  src={
+                    session.user?.image ||
+                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-Ne7oVV6Lx9uAnmJDUZrrLcGy8yzo1sXdpQ&s"
+                  }
+                  alt="Profile"
+                  className="w-full h-8 rounded-full object-contain"
                 />
               </button>
               {isOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg">
                   <Link href="/profile">
-                    <span className="block px-4 py-2 text-sm cursor-pointer">Profile</span>
+                    <span className="block px-4 py-2 text-sm cursor-pointer">
+                      Profile
+                    </span>
                   </Link>
                   <Link href="/profile/my-submissions">
-                    <span className="block px-4 py-2 text-sm cursor-pointer">My Submissions</span>
+                    <span className="block px-4 py-2 text-sm cursor-pointer">
+                      My Submissions
+                    </span>
                   </Link>
                   <Link href="/pending-requests">
-                    <span className="block px-4 py-2 text-sm cursor-pointer">Pending Requests</span>
+                    <span className="block px-4 py-2 text-sm cursor-pointer">
+                      Pending Requests
+                    </span>
                   </Link>
                   <Link href="/dashboard/admin">
-                    <span className="block px-4 py-2 text-sm cursor-pointer">Admin Dashboard</span>
+                    <span className="block px-4 py-2 text-sm cursor-pointer">
+                      Admin Dashboard
+                    </span>
                   </Link>
                   <button
-                    onClick={() => signOut()}
+                    onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-sm bg-red-500 text-white rounded-b-md"
                   >
                     Logout

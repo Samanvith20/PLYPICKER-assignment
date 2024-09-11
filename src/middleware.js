@@ -20,7 +20,7 @@ export async function middleware(request) {
   const url = request.nextUrl;
 
  
-
+    
  
   if (token) {
     if (url.pathname === '/signin' || url.pathname === '/signup') {
