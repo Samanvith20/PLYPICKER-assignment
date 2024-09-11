@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
@@ -45,7 +44,7 @@ const ReviewDetails = () => {
 
   const handleApproval = async (status) => {
     try {
-      console.log("Before sending to backend:", status.toLowerCase());
+      // console.log("Before sending to backend:", status.toLowerCase());
       await axios.patch(`/api/pending-request/${id}`, { status: status.toLowerCase() });
       router.push("/pending-requests");
     } catch (error) {

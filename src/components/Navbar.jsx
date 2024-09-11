@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 export default function Dashboard() {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter(); // Initialize router
+  const router = useRouter(); 
 
   const handleDropdownToggle = () => {
     setIsOpen((prev) => !prev);
@@ -22,9 +22,9 @@ export default function Dashboard() {
 
       const data = await res.json();
       if (res.ok) {
-        // Trigger NextAuth signOut which will also redirect to the homepage or login
+        
         await signOut({ redirect: false });
-        router.push("/signin"); // Correct routing after logout
+        router.push("/signin"); 
       } else {
         console.error("Error logging out:", data.message);
       }

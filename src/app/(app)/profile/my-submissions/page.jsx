@@ -1,6 +1,4 @@
 "use client";
-
-
 import useMySubmissions from "@/app/hooks/useMysubmissions";
 import { useSession, signIn } from "next-auth/react";
 

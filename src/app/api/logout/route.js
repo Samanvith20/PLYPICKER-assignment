@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/Database';
 import Sessions from '@/models/Session.model';
 import { getToken } from 'next-auth/jwt';
+import { getIpAddress } from "@/lib/Helperfunction";
 
 export async function POST(req) {
   const token = await getToken({ req });
@@ -19,18 +20,22 @@ export async function POST(req) {
       return NextResponse.json({ message: 'User ID is required' }, { status: 400 });
     }
 
+    const forwarded = req.headers['x-forwarded-for'];
+    const ipAddress = forwarded ? forwarded.split(',').pop() : "unknown";
     // Update the session with logoutTime
     const updatedSession = await Sessions.findOneAndUpdate(
       { userId , logoutTime: null }, // Find the active session
       {
         $set: { logoutTime: new Date() },
         $push: {
+          
           activities: {
             action: "logout",
             description: "User has logged out",
             timestamp: new Date(),
           },
         },
+        ipAddress: ipAddress,
       },
       { new: true }
     );

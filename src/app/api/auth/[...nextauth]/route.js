@@ -5,7 +5,9 @@ import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/Database";
 import Sessions from "@/models/Session.model";
 
- export const authOptions = {
+
+
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -13,7 +15,7 @@ import Sessions from "@/models/Session.model";
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) { // Add req here to access headers
         await dbConnect();
 
         try {
@@ -26,6 +28,27 @@ import Sessions from "@/models/Session.model";
           // Compare provided password with the stored hashed password
           const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
           if (!isPasswordValid) throw new Error("Password is incorrect");
+
+        
+          const forwarded = req.headers['x-forwarded-for'];
+          const ipAddress = forwarded ? forwarded.split(',').pop() : req.socket.remoteAddress;
+
+    
+          // Create a new session in the database after user signs in
+          const newSession = new Sessions({
+            userId: user._id,
+            loginTime: new Date(),
+            ipAddress: ipAddress,
+            activities: [
+              {
+                action: "login",
+                description: `User ${user.email} has logged in`,
+                timestamp: new Date(),
+              },
+            ],
+          });
+          await newSession.save();
+          console.log("New session created:", newSession);
 
           // Return user object with necessary information
           return { _id: user._id.toString(), email: user.email, role: user.role };
@@ -51,32 +74,6 @@ import Sessions from "@/models/Session.model";
       session.user._id = token._id;
       return session;
     },
-    async signIn({ user }) {
-      await dbConnect();
-      try {
-        // Create a new session in the database after user signs in
-        const newSession = new Sessions({
-          userId: user._id,
-          loginTime: new Date(),
-          activities: [
-            {
-              action: "login",
-              description: `User ${user.email} has logged in`,
-              timestamp: new Date(),
-            },
-          ],
-        });
-        await newSession.save();
-        console.log("New session created:", newSession);
-
-        return true; // Return true if sign-in is successful
-      } catch (error) {
-        console.error("Error in signIn callback:", error);
-        return false; // Return false if there was an error during sign-in
-      }
-    },
-    
-    
   },
   session: {
     strategy: "jwt", // Using JWT strategy for sessions

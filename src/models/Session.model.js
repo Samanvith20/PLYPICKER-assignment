@@ -2,6 +2,9 @@ import mongoose from 'mongoose';
 
 const SessionSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  ipAddress: {
+    type: String,
+  },
   loginTime: { type: Date, required: true },
   logoutTime: { type: Date },
   activities: [
@@ -16,6 +19,7 @@ const SessionSchema = new mongoose.Schema({
       timestamp: { type: Date, default: Date.now },
     },
   ],
+ 
 });
 
 const Sessions = mongoose.models.Sessions || mongoose.model('Sessions', SessionSchema);
