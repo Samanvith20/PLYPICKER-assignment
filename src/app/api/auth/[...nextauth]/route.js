@@ -5,8 +5,6 @@ import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/Database";
 import Sessions from "@/models/Session.model";
 
-
-
 export const authOptions = {
   providers: [
     CredentialsProvider({
@@ -15,7 +13,8 @@ export const authOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) { // Add req here to access headers
+      async authorize(credentials, req) {
+        // Add req here to access headers
         await dbConnect();
 
         try {
@@ -26,14 +25,22 @@ export const authOptions = {
           if (!user) throw new Error("No user found with the email");
 
           // Compare provided password with the stored hashed password
-          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
           if (!isPasswordValid) throw new Error("Password is incorrect");
 
-        
-          const forwarded = req.headers['x-forwarded-for'];
-          const ipAddress = forwarded ? forwarded.split(',').pop() : req.socket.remoteAddress;
+          let ipAddress = req.headers["x-real-ip"];
 
-    
+          const forwardedFor = req.headers["x-forwarded-for"];
+          if (!ipAddress && forwardedFor) {
+            ipAddress = forwardedFor?.split(",").at(0) ?? "Unknown";
+          }
+          console.log(req.headers);
+          console.log(forwardedFor);
+          
+
           // Create a new session in the database after user signs in
           const newSession = new Sessions({
             userId: user._id,
@@ -51,7 +58,11 @@ export const authOptions = {
           console.log("New session created:", newSession);
 
           // Return user object with necessary information
-          return { _id: user._id.toString(), email: user.email, role: user.role };
+          return {
+            _id: user._id.toString(),
+            email: user.email,
+            role: user.role,
+          };
         } catch (error) {
           console.error("Error in authorize function:", error);
           throw new Error(error.message);

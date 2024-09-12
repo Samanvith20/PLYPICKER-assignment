@@ -88,7 +88,7 @@ export default function Dashboard() {
                     </span>
                   </Link>
                   <button
-                    onClick={handleLogout}
+                    onClick={()=>signOut()}
                     className="w-full text-left px-4 py-2 text-sm bg-red-500 text-white rounded-b-md"
                   >
                     Logout

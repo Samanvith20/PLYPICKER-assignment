@@ -19,6 +19,7 @@
     "cloudinary": "^2.4.0",
     "clsx": "^2.1.1",
     "firebase": "^10.13.0",
+    "ip2location-io-nodejs": "^1.0.4",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.436.0",
     "mongodb": "^6.8.0",
