@@ -5,12 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import useProducts from "../hooks/useProducts";
 import axios from "axios";
-import { useIpaddress } from "../hooks/useIpaddress";
+
 
 
 const HomePage = () => {
   const { products, loading, error } = useProducts();
-   useIpaddress()
+  //  useIpaddress()
   if (loading) {
     return <div className="text-center mt-10">Loading...</div>;
   }

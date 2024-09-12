@@ -11,7 +11,7 @@ export default function GeolocationComponent() {
     const fetchLocation = async () => {
       try {
        
-        const response = await fetch('https://geolocation-db.com/json/e18b48c0-6cef-11ef-be25-fdc8f1201945');
+        const response = await fetch('/api/get-location');
         const data = await response.json();
          
          
@@ -37,12 +37,8 @@ export default function GeolocationComponent() {
     <div>
       <h1>Geolocation and IP Address</h1>
       <div>
-        <strong>IP Address:</strong> {location?.IPv4 || 'Loading...'}<br />
-        <strong>City:</strong> {location?.city || 'Loading...'}<br />
-        <strong>State:</strong> {location?.state || 'Loading...'}<br />
-        <strong>Country:</strong> {location?.country_name || 'Loading...'}<br />
-        <strong>Latitude:</strong> {location?.latitude || 'Loading...'}<br />
-        <strong>Longitude:</strong> {location?.longitude || 'Loading...'}<br />
+        <strong>IP Address:</strong> {location?.ip}<br />
+       
       </div>
     </div>
   );
